@@ -115,7 +115,7 @@ class Subscription:
                 pass
 
     def __on_message(self, msg):
-        # print(msg)
+        #print(msg)
         _json = json.loads(msg)
         if _json['type'] == 'trade':
             self._feeder(_json)
@@ -139,14 +139,8 @@ class Subscription:
     def _feeder(self, _json):
         if 'data' in _json.keys():
             for _data in _json['data']:
-                _info = self._to_dict(_data)
-                _symbol = _info.pop('symbol')
-                if self.max_history > 0:
-                    _info['history'] = self.tickers[_symbol].history.append(
-                        _info, ignore_index=True).tail(self.tickers[_symbol].max_history)
-                self.tickers[_symbol].set_last_trade(_info)
                 if self.on_tick:
-                    self.on_tick(self.tickers[_symbol])
+                    self.on_tick(_data)
 
     def _to_dict(self, _data):
         return {self._cols[k]: datetime.fromtimestamp(
